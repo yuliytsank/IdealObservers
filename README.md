@@ -9,7 +9,7 @@ Given knowledge of all the statistics of particular task that involves a particu
 
 #### ROI:
 
-An ROI model applied to images allows one to understand which parts contain the most task-relevant information. It makes use of an Ideal Observer by applying it to small parts of the image at a time. This is useful for classification tasks where the differences betwen the classes are concentrated in certain areas of an image. For example, in a face gender discrimination task, where the faces are spatially aligned, this model can highlight the parts of a face that hold the most discriminative (most different between the two classes) information. See the plots below for a further explanation of this example.
+An ROI model applied to images allows one to understand which parts contain the most task-relevant information. It makes use of an Ideal Observer by applying it to small parts of the image at a time and outputs a performance map corresponding to every possible position of the center of a small window of the images used to do the task. This is useful for classification tasks where the differences betwen the classes are concentrated in certain areas of an image. For example, in a face gender discrimination task, where the faces are spatially aligned, this model can highlight the parts of a face that hold the most discriminative (most different between the two classes) information. See the plots below for a further explanation of this example.
 
 #### FIO:
 
@@ -58,9 +58,28 @@ A) A flow chart for a Region of Interest Ideal Observer. (a.1) An Ideal Observer
 - The 'runIO_gender.m' script runs the 'IO.m' (ideal observer) function for a gender discrimination task using 80 (40 male and 40 female) 500x500px neutral-expression faces that are saved in the 'NmNf_80.mat' file. The faces are resized and spatially aligned so that the eyes are set to be 2/5 of the way down from the top of the image and the chin is 1/50 of the way from the bottom of the image. 
 - The script runs the ideal observer for using several different contrast values and saves results of performance and runtime in a directory called 'SavedDir_IO_gender'. 
 - The 'IO.m' function simulates many trials of a gender discrimination task. On each trial, a face draw uniformly at random (of 80 in the stimulus set), has a specified level of white noise with a specific variance added at each pixel location. This then becomes a signal which can is compared to each of the 80 original templates (noise-free images) in order to find likelihoods of the signal having come from each of the 80 templates. The likelihoods are then summed within each class (40 likelihoods for male faces, and 40 for female faces), resulting in 2 class likelihoods, the maximum of which is taken to be the chosen answer (male or female) for that trial. Only the likelhoods are calculated rather than full posterior probabilites because the function takes prior probabilities to be uniform, so they act as a scalar and don't contribute unique information for each class.  
+- 'IO.m' is set up in such a way that the task that is simulated can be changed by changing the stimulus set fed into the function and/or changing the number of classes in the task. For example, the same stimulus set that is used for a gender discrimination task, can be used in a (1 of 80) face identification simply by changing the parameter 'c' in the 'runIO_gender.m' script from 2 (classes) to 80. 
 
 #### ROI:
 
 ##### IO_ROI.m and runIO_ROI_gender.m
 
-- 
+- The 'runIO_ROI_gender.m' script runs the 'IO_ROI.m' function for the same task and stimulus set as described for the IO above.
+- The script saves the results of the performance map in a directory called 'SaveDir_ROI_gender', along with intermediate variables such as the likelihoods found after a set of trials, as well as the initial parameters used to run the function. 
+- The 'IO_ROI.m' function does the same thing as the 'IO.m' function, except it uses small windows of an image at a time and runs through different positions of the window centers across the stimuli. The size of each square window is currently set to 30px and the step size to sample every 10px of the input images. These parameters can be changed in lines 87-88 of 'IO_ROI.m'.
+- The 'IO_ROI.m' function uses vectorized operations to simulate many trials at once. However, the amount of RAM that is available on your computer limits the number of trials that can be run at once (currently set to 10000, but can be changed as an optional parameter fed into the function). As a result, the total number of trials needed to be run are split to into sets, where each set contains no more than than maximum number of trials specified per set. The performance results from each set of trials are then averaged. 
+- Similar to the IO, the task that is being simulated can be changed by changing the stimulus set and and the paramter for the specified number of classes as needed. 
+
+#### FIO:
+
+##### FIO_batches.m and runFIO_batches_gender.m
+
+- The 'runFIO_batches_gender.m' script runs the 'FIO_batches.m' function for the same task and stimulus set as described for the IO above.
+- The script contains paramter settings that can be changed for the spatially variant contrast sensitivity function that is used to filter the images in order to simulate a foveated visual system.  
+- The 'FIO_batches.m' function is meant to be used with large stimulus sets (larger than about 15 500x500px images). The 'batches' refers to the way the function breaks up and processes the stimulus set in parts in order to maximize the use of RAM to speed up the calculations. A subset of the fixation positions that are specified by the 'fxs' and 'fys' parameters are run at a time. In addition a subset of the stimulus set is spatially filtered at and saved at a time. After the entire stimulus set is spatially filtered for a specific set of fixation positions, the function then calculates and saves the mean and covariances matrices from the filtered templates and then deletes the filtered templates themselves in order to free up space. 
+- Similar to the IO, the task that is being simulated can be changed by changing the stimulus set and and the paramter for the specified number of classes as needed. 
+
+##### FIO_smallSet.m and runFIO_smallSet.m
+
+
+
