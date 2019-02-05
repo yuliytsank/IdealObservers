@@ -18,11 +18,13 @@ a = images_object.a;
 
 pc_IO_gender.cs_values = cs_values;
 
+save_dir = 'SavedDir_IO_gender';
+
 for cs_num = 1:length(cs_values)
     
     cs = cs_values(cs_num);
     pc_IO_gender.(['cs_', num2str(cs_num)]) = IO_gender(a,mask,c,cs,sdeve,js,trials, ...
-        'saveDir', 'SavedTemps_hn_Mparams', 'printText', ['cs_num: ', num2str(cs_num)]);
+        'saveDir', save_dir, 'printText', ['cs_num: ', num2str(cs_num)]);
     save('pc_IO_gender', 'pc_IO_gender')
 end
 
