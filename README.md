@@ -3,19 +3,19 @@ Contains code and sample stimulus set for running a standard Bayesian Ideal Obse
 
 ## Explanation of What an IO, ROI, and FIO Are Used For In Human Vision Research
 
-##### IO 
+#### IO: 
 
 Given knowledge of all the statistics of particular task that involves a particular level of external noise (uncertainty), an Ideal Observer is able to provide a benchmark of the maximum possible performance in that task. This is usefull for lots of things, including human perception research (which is what I use it for), because it is able to help narrow down the possbible models or mechanisms that can describe how a particular task is accomplished. (see https://www.ncbi.nlm.nih.gov/pubmed/20920517 for a thorough review of how and why ideal observers have been used in vision research). 
 
-##### ROI
+#### ROI:
 
 An ROI model applied to images allows one to understand which parts contain the most task-relevant information. It makes use of an Ideal Observer by applying it to small parts of the image at a time. This is useful for classification tasks where the differences betwen the classes are concentrated in certain areas of an image. For example, in a face gender discrimination task, where the faces are spatially aligned, this model can highlight the parts of a face that hold the most discriminative (most different between the two classes) information. See the plots below for a further explanation of this example.
 
-##### FIO
+#### FIO:
 
 An FIO models the foveated nature of the visual system through a series of spatial filtering operations (see explanation below for more details) based on a spatially variant contrast sensitivity function (CSF) that determines which spatial frequencies are filtered out of a stimulus, depending on a chosen simulated center of fixation to that image. It then uses an optimal decision rule to decide which class was shown on a particular simulated trial, given a specified level of added uncertainty at each pixel position. It is a very useuful tool to study eye movements because it introduces differnces in spatial resolution across the simulated visual field, which results in differences in performance for tasks like a face gender discrimination task, depending on the center of a simulated fixation position. The model outputs a performance map for every possible fixation position made to an image and is able to find a theoretical optimal intial fixation position for a particular task.    
 
-##### ROI, FIO, and Human Psychophysics Used Together
+#### ROI, FIO, and Human Psychophysics Used Together:
 
 The figure below shows an example of what kind of insight an ROI and FIO can provide when used together: 
 
@@ -51,9 +51,16 @@ A) A flow chart for a Region of Interest Ideal Observer. (a.1) An Ideal Observer
 
 ## Explanation of Code
 
-##### IO 
+#### IO: 
 
-#### IO.m and runIO_gender.m
+##### IO.m and runIO_gender.m
 
-- The runIO_gender.m script runs the IO.m function for a gender discrimination task using 80 (40 male and 40 female) neutral-expression faces
+- The 'runIO_gender.m' script runs the 'IO.m' (ideal observer) function for a gender discrimination task using 80 (40 male and 40 female) 500x500px neutral-expression faces that are saved in the 'NmNf_80.mat' file. The faces are resized and spatially aligned so that the eyes are set to be 2/5 of the way down from the top of the image and the chin is 1/50 of the way from the bottom of the image. 
+- The script runs the ideal observer for using several different contrast values and saves results of performance and runtime in a directory called 'SavedDir_IO_gender'. 
+- The 'IO.m' function simulates many trials of a gender discrimination task. On each trial, a face draw uniformly at random (of 80 in the stimulus set), has a specified level of white noise with a specific variance added at each pixel location. This then becomes a signal which can is compared to each of the 80 original templates (noise-free images) in order to find likelihoods of the signal having come from each of the 80 templates. The likelihoods are then summed within each class (40 likelihoods for male faces, and 40 for female faces), resulting in 2 class likelihoods, the maximum of which is taken to be the chosen answer (male or female) for that trial. Only the likelhoods are calculated rather than full posterior probabilites because the function takes prior probabilities to be uniform, so they act as a scalar and don't contribute unique information for each class.  
+
+#### ROI:
+
+##### IO_ROI.m and runIO_ROI_gender.m
+
 - 
